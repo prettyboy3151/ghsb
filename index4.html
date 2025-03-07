@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>柜号识别</title>
+    <style>
+        .container { width: 90%; margin: auto; text-align: center; }
+        .image-upload { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .image-upload label { display: block; width: 100px; height: 30px; border: 1px solid #ccc; text-align: center; line-height: 30px; cursor: pointer; font-size: 14px; }
+        input[type="file"] { display: none; }
+        .field-container { display: flex; align-items: center; margin-bottom: 10px; }
+        .field-container label { 
+            width: 100px; /* 固定宽度 */
+            text-align: right; /* 字段名称靠右对齐 */
+            margin-right: 10px; 
+            white-space: nowrap; /* 防止字段名称换行 */
+        }
+        .field-container input { flex: 1; font-size: 16px; padding: 5px; } /* 增大输入框字体 */
+        .field-container input[type="checkbox"] { width: 20px; height: 20px; margin-left: 10px; } /* 调整复选框大小 */
+        textarea { width: 100%; height: 100px; margin-top: 10px; font-size: 16px; padding: 5px; } /* 增大文本区域字体 */
+        .image-preview { width: 100px; height: 100px; border: 1px solid #ccc; margin-top: 5px; cursor: pointer; }
+        .status { font-size: 12px; color: #666; margin-top: 5px; }
+        .modal { display: none; position: fixed; z-index: 1; padding-top: 60px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); }
+        .modal-content { margin: auto; display: block; max-width: 80%; max-height: 80%; }
+        .close { position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; transition: 0.3s; cursor: pointer; }
+        .close:hover { color: #bbb; }
+        .my-button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="image-upload">
+            <div>
+                <label for="cabinetImg">上传柜号</label>
+                <input type="file" id="cabinetImg" accept="image/*" onchange="previewImage(event, 'cabinetPreview'); detectPic(event);">
+                <img id="cabinetPreview" class="image-preview" onclick="openModal(this.src)">
+                <div id="cabinetStatus" class="status"></div>
+            </div>
+            <div>
+                <label for="sealImg">上传封条</label>
+                <input type="file" id="sealImg" accept="image/*" onchange="previewImage(event, 'sealPreview'); detectSeal(event);">
+                <img id="sealPreview" class="image-preview" onclick="openModal(this.src)">
+                <div id="sealStatus" class="status"></div>
+            </div>
+        </div>
+        
+        <div id="fields"></div>
+        
+        <textarea id="output" readonly></textarea>
+        <button class="my-button" onclick="generateText()">生成</button>
+        <button class="my-button" onclick="copyText()">复制</button>
+        <button class="my-button" onclick="clearFields()">清空</button>
+    </div>
+
+    <!-- 图片放大弹窗 -->
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+    
+    <script>
+        const fields = ['做柜时间', '工厂名称', '装货地点', '订舱号', '柜号', '封条', '柜重', '柜型', '提柜地点', '还柜地点', '车牌', '司机', '电话号码', '身份证', '车头重', '车架重', '托架号'];
+        
+        // 柜型转换映射
+        const containerTypeMap = {
+            '42V1': '40HT',
+            '42U1': '40OT',
+            '42R1': '40RF',
+            '45R1': '40RH',
+            '42T1': '40TK',
+            '45P1': '40FR',
+            '45G1': '40HQ',
+            '42G1': '40GP',
+            '22G1': '20GP',
+            '25G1': '20HQ',
+            '22V1': '20HT',
+            '22U1': '20OT',
+            '22R1': '20RF',
+            '25R1': '20RH',
+            '22T1': '20TK',
+            '22P1': '20FR',
+            'L2V1': '45HT',
+            'L2U1': '45OT',
+            'L2R1': '45RF',
+            'L5R1': '45RG',
+            'L2T1': '45TK',
+            'L2P1': '45FR',
+            'L2G1': '45GP',
+            'L5G1': '45HQ'
+        };
+
+        function createFields() {
+            let container = document.getElementById("fields");
+            fields.forEach(field => {
+                let fieldContainer = document.createElement("div");
+                fieldContainer.className = "field-container";
+                
+                let label = document.createElement("label");
+                label.textContent = field + ":";
+                label.htmlFor = field;
+                
+                let input = document.createElement("input");
+                input.id = field;
+                input.placeholder = field;
+
+                // 为柜重、车头重、车架重添加单位提示
+                if (field === '柜重' || field === '车头重' || field === '车架重') {
+                    input.placeholder += " (KGS)";
+                }
+                
+                if (field === '做柜时间') {
+                    input.type = "datetime-local";
+                }
+                
+                let checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.checked = true;
+                checkbox.id = field + "_checkbox";
+                
+                fieldContainer.appendChild(label);
+                fieldContainer.appendChild(input);
+                fieldContainer.appendChild(checkbox);
+                container.appendChild(fieldContainer);
+            });
+        }
+        
+        function previewImage(event, id) {
+            let reader = new FileReader();
+            reader.onload = function(){ 
+                document.getElementById(id).src = reader.result; 
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+        
+        function detectPic(event) {
+            var formData = new FormData();
+            var file = event.target.files[0];
+            if (file) {
+                document.getElementById('cabinetStatus').textContent = "识别中...";
+                formData.append("keys", "4a8f1c60b65be19687d9969753b4a5b6");
+                formData.append("img", file);
+                $.ajax({
+                    contentType: false,
+                    processData: false,
+                    url: "http://service.cimcai.com/detect-photo-container-info",
+                    method: "post",
+                    data: formData,
+                    mimeType: "multipart/form-data",
+                    success: function(data) {
+                        var res = JSON.parse(data);
+                        if (res.code === 0) {
+                            // 假设返回的数据结构为 res.data.containerNumber, res.data.containerType, res.data.weight
+                            document.getElementById('柜号').value = res.data.container_no || '';
+                            document.getElementById('柜型').value = containerTypeMap[res.data.container_type] || res.data.container_type || '';
+                            document.getElementById('柜重').value = (res.data.container_weight.TARE_KGS || '') + ' KGS'; // 自动添加单位
+                            document.getElementById('cabinetStatus').textContent = "识别成功!";
+                        } else {
+                            document.getElementById('cabinetStatus').textContent = "识别失败，请重新上传";
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("API调用失败:", error);
+                        document.getElementById('cabinetStatus').textContent = "识别失败，请重新上传";
+                    }
+                });
+            }
+        }
+
+        function detectSeal(event) {
+            var formData = new FormData();
+            var file = event.target.files[0];
+            if (file) {
+                document.getElementById('sealStatus').textContent = "识别中...";
+                formData.append("keys", "4a8f1c60b65be19687d9969753b4a5b6");
+                formData.append("img", file);
+                $.ajax({
+                    contentType: false,
+                    processData: false,
+                    url: "http://service.cimcai.com/detect-photo-seal",
+                    method: "post",
+                    data: formData,
+                    mimeType: "multipart/form-data",
+                    success: function(data) {
+                        var res = JSON.parse(data);
+                        if (res.code === 0) {
+                            // 假设返回的数据结构为 res.data.sealNumber
+                            document.getElementById('封条').value = res.data.seal_no || '';
+                            document.getElementById('sealStatus').textContent = "识别成功!";
+                        } else {
+                            document.getElementById('sealStatus').textContent = "识别失败，请重新上传";
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("API调用失败:", error);
+                        document.getElementById('sealStatus').textContent = "识别失败，请重新上传";
+                    }
+                });
+            }
+        }
+        
+        function generateText() {
+            let text = fields.filter(field => document.getElementById(field + "_checkbox").checked)
+                            .map(field => {
+                                let value = document.getElementById(field).value;
+                                // 如果字段是柜重、车头重、车架重，且值不为空，确保单位存在
+                                if ((field === '柜重' || field === '车头重' || field === '车架重') && value && !value.endsWith(' KGS')) {
+                                    value += ' KGS';
+                                }
+                                return `${field}: ${value}`;
+                            })
+                            .join("\n");
+            document.getElementById("output").value = text;
+        }
+        
+        function copyText() {
+            let output = document.getElementById("output");
+            output.select();
+            document.execCommand("copy");
+            alert("内容已复制");
+        }
+        
+        function clearFields() {
+            fields.forEach(field => {
+                document.getElementById(field).value = "";
+                document.getElementById(field + "_checkbox").checked = true;
+            });
+            document.getElementById("output").value = "";
+            document.getElementById("cabinetPreview").src = "";
+            document.getElementById("sealPreview").src = "";
+            document.getElementById("cabinetStatus").textContent = "";
+            document.getElementById("sealStatus").textContent = "";
+        }
+
+        // 图片放大功能
+        function openModal(src) {
+            document.getElementById("modalImage").src = src;
+            document.getElementById("imageModal").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("imageModal").style.display = "none";
+        }
+
+        createFields();
+    </script>
+</body>
+</html>
