@@ -55,15 +55,15 @@
         <!-- 图片上传区域 -->
         <div class="image-upload">
             <div>
-                <label for="cabinetImg">上传柜号</label>
                 <input type="file" id="cabinetImg" accept="image/*" onchange="previewImage(event, 'cabinetPreview'); detectPic(event);">
                 <img id="cabinetPreview" class="image-preview" onclick="openModal(this.src)">
+                <label for="cabinetImg">导入柜门</label>                
                 <div id="cabinetStatus" class="status"></div>
             </div>
             <div>
-                <label for="sealImg">上传封条</label>
                 <input type="file" id="sealImg" accept="image/*" onchange="previewImage(event, 'sealPreview'); detectSeal(event);">
                 <img id="sealPreview" class="image-preview" onclick="openModal(this.src)">
+                <label for="sealImg">导入封条</label>
                 <div id="sealStatus" class="status"></div>
             </div>
         </div>
@@ -72,7 +72,7 @@
         <div id="fields"></div>
         
         <!-- 输出文本区域和操作按钮 -->
-        <textarea id="output" readonly></textarea>
+        <textarea id="output"></textarea>
         <button class="my-button" onclick="generateText()">生成</button>
         <button class="my-button" onclick="copyText()">复制</button>
         <button class="my-button" onclick="clearFields()">清空</button>
@@ -436,15 +436,24 @@
         
         // 清空所有字段的功能
         function clearFields() {
-            fields.forEach(field => {
+            // 定义需要清除的字段
+            const fieldsToClear = ['柜号', '封条', '柜重', '柜型', '车牌', '司机', '电话号码', '身份证', '车头重', '车架重', '托架号'];
+
+            // 清除指定字段的内容
+            fieldsToClear.forEach(field => {
                 document.getElementById(field).value = "";
-                document.getElementById(field + "_checkbox").checked = true;
             });
-            document.getElementById("output").value = "";
+
+            // 清除柜号和封条照片的预览
             document.getElementById("cabinetPreview").src = "";
             document.getElementById("sealPreview").src = "";
+
+            // 清除识别状态
             document.getElementById("cabinetStatus").textContent = "";
             document.getElementById("sealStatus").textContent = "";
+
+            // 清除多行文本框的内容
+            document.getElementById("output").value = "";
         }
 
         // 图片放大功能
