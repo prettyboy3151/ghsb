@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>柜号识别</title>
     <style>
+        /* 页面样式 */
         .container { width: 90%; margin: auto; text-align: center; }
         .image-upload { display: flex; justify-content: space-between; margin-bottom: 10px; }
         .image-upload label { display: block; width: 100px; height: 30px; border: 1px solid #ccc; text-align: center; line-height: 30px; cursor: pointer; font-size: 14px; }
@@ -36,6 +37,7 @@
 </head>
 <body>
     <div class="container">
+        <!-- 图片上传区域 -->
         <div class="image-upload">
             <div>
                 <label for="cabinetImg">上传柜号</label>
@@ -51,8 +53,10 @@
             </div>
         </div>
         
+        <!-- 动态生成的字段区域 -->
         <div id="fields"></div>
         
+        <!-- 输出文本区域和操作按钮 -->
         <textarea id="output" readonly></textarea>
         <button class="my-button" onclick="generateText()">生成</button>
         <button class="my-button" onclick="copyText()">复制</button>
@@ -66,9 +70,10 @@
     </div>
     
     <script>
+        // 定义所有字段的名称
         const fields = ['做柜时间', '工厂名称', '装货地点', '订舱号', '柜号', '封条', '柜重', '柜型', '提柜地点', '还柜地点', '车牌', '司机', '电话号码', '身份证', '车头重', '车架重', '托架号'];
         
-        // 柜型转换映射
+        // 柜型转换映射表，用于将API返回的柜型代码转换为可读的柜型名称
         const containerTypeMap = {
             '42V1': '40HT',
             '42U1': '40OT',
@@ -96,16 +101,91 @@
             'L5G1': '45HQ'
         };
 
+        // 工厂名称和装货地点的默认选项
+        const factoryOptions = ['美的', 'TCL', '格兰仕', '伟易达'];
+        const locationOptions = ['顺德北滘', '广州南沙', '中山民众', '东莞洪梅'];
+
+        // 提柜地点和还柜地点的默认选项
+        const pickupOptions = [
+            '盐田码头', '蛇口码头', '赤湾码头', '大铲湾码头', '文汇堆场', '通捷利一场', '通捷利五场', '天河堆场', 
+            '鹏捷利堆场', '妈湾码头', '龙岗鑫三利堆场', '万永联西坑堆场', '坪山堆场', '蛇口中集C场', '蛇口柏坚堆场', 
+            '蛇口万永联堆场', '蛇口珉丰堆场', '裕鹏大铲湾堆场', '盐田珉丰五号堆场', '裕鹏大铲湾堆场', '蛇口鑫三利堆场', 
+            '东莞中集凤岗堆场', '广通海文堆场'
+        ];
+        const returnOptions = ['盐田码头', '蛇口码头', '赤湾码头', '大铲湾码头'];
+
+        // 车牌、司机、电话号码、身份证、车头重、车架重、托架号的默认数据
+        const vehicleData = [
+            {
+                licensePlate: '粤BMP850',
+                driver: '林忠玉',
+                phone: '13631561213',
+                idCard: '412902197309064814',
+                headWeight: '',
+                frameWeight: '',
+                trailerNumber: ''
+            },
+            {
+                licensePlate: '粤BLV020',
+                driver: '王晓飞',
+                phone: '13823742658',
+                idCard: '411081198611068373',
+                headWeight: '',
+                frameWeight: '',
+                trailerNumber: ''
+            },
+            {
+                licensePlate: '粤BNN909',
+                driver: '林春早',
+                phone: '13410235386',
+                idCard: '432624197911041119',
+                headWeight: '',
+                frameWeight: '',
+                trailerNumber: ''
+            },
+            {
+                licensePlate: '粤BKC508',
+                driver: '徐永兵',
+                phone: '13902472205',
+                idCard: '420703196912053379',
+                headWeight: '',
+                frameWeight: '',
+                trailerNumber: ''
+            },
+            {
+                licensePlate: '粤BGL690',
+                driver: '杨兵',
+                phone: '15236025455',
+                idCard: '411381198207103954',
+                headWeight: '',
+                frameWeight: '',
+                trailerNumber: ''
+            },
+            {
+                licensePlate: '粤BLB806',
+                driver: '闫华伟',
+                phone: '13823526286',
+                idCard: '412902197511240236',
+                headWeight: '',
+                frameWeight: '',
+                trailerNumber: ''
+            }
+        ];
+
+        // 动态创建字段的函数
         function createFields() {
             let container = document.getElementById("fields");
             fields.forEach(field => {
+                // 创建每个字段的容器
                 let fieldContainer = document.createElement("div");
                 fieldContainer.className = "field-container";
                 
+                // 创建字段的标签
                 let label = document.createElement("label");
                 label.textContent = field + ":";
                 label.htmlFor = field;
                 
+                // 创建输入框
                 let input = document.createElement("input");
                 input.id = field;
                 input.placeholder = field;
@@ -115,37 +195,143 @@
                     input.placeholder += " (KGS)";
                 }
                 
+                // 如果字段是“做柜时间”，设置为日期时间输入框
                 if (field === '做柜时间') {
                     input.type = "datetime-local";
                 }
+
+                // 工厂名称和装货地点的特殊处理
+                if (field === '工厂名称' || field === '装货地点') {
+                    // 创建下拉选择列表
+                    let datalist = document.createElement("datalist");
+                    datalist.id = field + "Options";
+                    input.setAttribute("list", field + "Options");
+
+                    // 根据字段类型添加选项
+                    if (field === '工厂名称') {
+                        factoryOptions.forEach(option => {
+                            let optionElement = document.createElement("option");
+                            optionElement.value = option;
+                            datalist.appendChild(optionElement);
+                        });
+                    } else if (field === '装货地点') {
+                        locationOptions.forEach(option => {
+                            let optionElement = document.createElement("option");
+                            optionElement.value = option;
+                            datalist.appendChild(optionElement);
+                        });
+                    }
+
+                    // 将下拉列表添加到字段容器中
+                    fieldContainer.appendChild(datalist);
+                }
+
+                // 提柜地点和还柜地点的特殊处理
+                if (field === '提柜地点' || field === '还柜地点') {
+                    // 创建下拉选择列表
+                    let datalist = document.createElement("datalist");
+                    datalist.id = field + "Options";
+                    input.setAttribute("list", field + "Options");
+
+                    // 根据字段类型添加选项
+                    if (field === '提柜地点') {
+                        pickupOptions.forEach(option => {
+                            let optionElement = document.createElement("option");
+                            optionElement.value = option;
+                            datalist.appendChild(optionElement);
+                        });
+                    } else if (field === '还柜地点') {
+                        returnOptions.forEach(option => {
+                            let optionElement = document.createElement("option");
+                            optionElement.value = option;
+                            datalist.appendChild(optionElement);
+                        });
+                    }
+
+                    // 将下拉列表添加到字段容器中
+                    fieldContainer.appendChild(datalist);
+                }
+
+                // 车牌字段的特殊处理
+                if (field === '车牌') {
+                    // 创建下拉选择列表
+                    let datalist = document.createElement("datalist");
+                    datalist.id = field + "Options";
+                    input.setAttribute("list", field + "Options");
+
+                    // 添加车牌选项
+                    vehicleData.forEach(vehicle => {
+                        let optionElement = document.createElement("option");
+                        optionElement.value = vehicle.licensePlate;
+                        datalist.appendChild(optionElement);
+                    });
+
+                    // 将下拉列表添加到字段容器中
+                    fieldContainer.appendChild(datalist);
+                }
                 
+                // 创建复选框
                 let checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
                 checkbox.checked = true;
                 checkbox.id = field + "_checkbox";
                 
+                // 将标签、输入框和复选框添加到字段容器中
                 fieldContainer.appendChild(label);
                 fieldContainer.appendChild(input);
                 fieldContainer.appendChild(checkbox);
                 container.appendChild(fieldContainer);
             });
+
+            // 工厂名称和装货地点的联动功能
+            document.getElementById('工厂名称').addEventListener('input', function() {
+                // 获取当前选择的工厂名称的索引
+                let factoryIndex = factoryOptions.indexOf(this.value);
+                // 如果选择的工厂名称在选项中，自动填充对应的装货地点
+                if (factoryIndex !== -1) {
+                    document.getElementById('装货地点').value = locationOptions[factoryIndex];
+                }
+            });
+
+            // 车牌字段的联动功能
+            document.getElementById('车牌').addEventListener('input', function() {
+                // 获取当前选择的车牌
+                let selectedLicensePlate = this.value;
+                // 查找对应的车辆信息
+                let selectedVehicle = vehicleData.find(vehicle => vehicle.licensePlate === selectedLicensePlate);
+                if (selectedVehicle) {
+                    // 自动填充司机、电话号码、身份证、车头重、车架重、托架号字段
+                    document.getElementById('司机').value = selectedVehicle.driver || '';
+                    document.getElementById('电话号码').value = selectedVehicle.phone || '';
+                    document.getElementById('身份证').value = selectedVehicle.idCard || '';
+                    document.getElementById('车头重').value = selectedVehicle.headWeight || '';
+                    document.getElementById('车架重').value = selectedVehicle.frameWeight || '';
+                    document.getElementById('托架号').value = selectedVehicle.trailerNumber || '';
+                }
+            });
         }
         
+        // 图片预览功能
         function previewImage(event, id) {
             let reader = new FileReader();
             reader.onload = function(){ 
+                // 将图片显示在预览区域
                 document.getElementById(id).src = reader.result; 
             };
+            // 读取上传的图片文件
             reader.readAsDataURL(event.target.files[0]);
         }
         
+        // 识别柜号图片的功能
         function detectPic(event) {
             var formData = new FormData();
             var file = event.target.files[0];
             if (file) {
+                // 显示识别状态
                 document.getElementById('cabinetStatus').textContent = "识别中...";
                 formData.append("keys", "4a8f1c60b65be19687d9969753b4a5b6");
                 formData.append("img", file);
+                // 发送AJAX请求到API进行识别
                 $.ajax({
                     contentType: false,
                     processData: false,
@@ -156,7 +342,7 @@
                     success: function(data) {
                         var res = JSON.parse(data);
                         if (res.code === 0) {
-                            // 假设返回的数据结构为 res.data.containerNumber, res.data.containerType, res.data.weight
+                            // 识别成功，填充柜号、柜型和柜重字段
                             document.getElementById('柜号').value = res.data.container_no || '';
                             document.getElementById('柜型').value = containerTypeMap[res.data.container_type] || res.data.container_type || '';
                             document.getElementById('柜重').value = (res.data.container_weight.TARE_KGS || '') + ' KGS'; // 自动添加单位
@@ -173,13 +359,16 @@
             }
         }
 
+        // 识别封条图片的功能
         function detectSeal(event) {
             var formData = new FormData();
             var file = event.target.files[0];
             if (file) {
+                // 显示识别状态
                 document.getElementById('sealStatus').textContent = "识别中...";
                 formData.append("keys", "4a8f1c60b65be19687d9969753b4a5b6");
                 formData.append("img", file);
+                // 发送AJAX请求到API进行识别
                 $.ajax({
                     contentType: false,
                     processData: false,
@@ -190,7 +379,7 @@
                     success: function(data) {
                         var res = JSON.parse(data);
                         if (res.code === 0) {
-                            // 假设返回的数据结构为 res.data.sealNumber
+                            // 识别成功，填充封条字段
                             document.getElementById('封条').value = res.data.seal_no || '';
                             document.getElementById('sealStatus').textContent = "识别成功!";
                         } else {
@@ -205,7 +394,9 @@
             }
         }
         
+        // 生成文本的功能
         function generateText() {
+            // 过滤出选中的字段，并生成文本
             let text = fields.filter(field => document.getElementById(field + "_checkbox").checked)
                             .map(field => {
                                 let value = document.getElementById(field).value;
@@ -216,9 +407,11 @@
                                 return `${field}: ${value}`;
                             })
                             .join("\n");
+            // 将生成的文本显示在输出区域
             document.getElementById("output").value = text;
         }
         
+        // 复制文本的功能
         function copyText() {
             let output = document.getElementById("output");
             output.select();
@@ -226,6 +419,7 @@
             alert("内容已复制");
         }
         
+        // 清空所有字段的功能
         function clearFields() {
             fields.forEach(field => {
                 document.getElementById(field).value = "";
@@ -244,10 +438,12 @@
             document.getElementById("imageModal").style.display = "block";
         }
 
+        // 关闭图片放大弹窗
         function closeModal() {
             document.getElementById("imageModal").style.display = "none";
         }
 
+        // 页面加载时创建字段
         createFields();
     </script>
 </body>
