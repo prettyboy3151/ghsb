@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>柜号识别</title>
-    <script>
+    <!--<script>
         // 检测设备类型
         function isMobileDevice() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -18,35 +18,118 @@
             // 或者直接隐藏页面内容
             document.body.innerHTML = "<h1>此页面仅限手机访问</h1>";
         }
-    </script>
+    </script>-->
     <style>
-        /* 页面样式 */
-        .container { width: 90%; margin: auto; text-align: center; }
-        .image-upload { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .image-upload label { display: block; width: 100px; height: 30px; border: 1px solid #ccc; text-align: center; line-height: 30px; cursor: pointer; font-size: 14px; }
-        input[type="file"] { display: none; }
-        .field-container { display: flex; align-items: center; margin-bottom: 10px; }
-        .field-container label { 
-            width: 100px; /* 固定宽度 */
-            text-align: right; /* 字段名称靠右对齐 */
-            margin-right: 10px; 
-            white-space: nowrap; /* 防止字段名称换行 */
-        }
-        .field-container input { flex: 1; font-size: 16px; padding: 5px; } /* 增大输入框字体 */
-        .field-container input[type="checkbox"] { width: 20px; height: 20px; margin-left: 10px; } /* 调整复选框大小 */
-        textarea { width: 100%; height: 100px; margin-top: 10px; font-size: 16px; padding: 5px; } /* 增大文本区域字体 */
-        .image-preview { width: 100px; height: 100px; border: 1px solid #ccc; margin-top: 5px; cursor: pointer; }
-        .status { font-size: 12px; color: #666; margin-top: 5px; }
-        .modal { display: none; position: fixed; z-index: 1; padding-top: 60px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.9); }
-        .modal-content { margin: auto; display: block; max-width: 80%; max-height: 80%; }
-        .close { position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; transition: 0.3s; cursor: pointer; }
-        .close:hover { color: #bbb; }
-        .my-button {
-            margin: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+    /* 页面样式 */
+    body {
+        margin: 0;
+        padding: 0;
+        padding-bottom: 20px; /* 增加底部内边距，防止误触 */
+        padding-top: 10px; /* 增加顶部内边距，防止误触 */
+        box-sizing: border-box;
+    }
+    .container {
+        width: 90%;
+        margin: auto;
+        text-align: center;
+        padding-bottom: 20px; /* 增加底部内边距，防止误触 */
+        padding-bottom: 10px; /* 增加顶部内边距，防止误触 */
+    }
+    .image-upload {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    .image-upload label {
+        display: block;
+        width: 100px;
+        height: 30px;
+        border: 1px solid #ccc;
+        text-align: center;
+        line-height: 30px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    input[type="file"] {
+        display: none;
+    }
+    .field-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .field-container label {
+        width: 100px; /* 固定宽度 */
+        text-align: right; /* 字段名称靠右对齐 */
+        margin-right: 10px;
+        white-space: nowrap; /* 防止字段名称换行 */
+    }
+    .field-container input {
+        flex: 1;
+        font-size: 16px;
+        padding: 5px;
+    } /* 增大输入框字体 */
+    .field-container input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        margin-left: 10px;
+    } /* 调整复选框大小 */
+    textarea {
+        width: 100%;
+        height: 300px;
+        margin-top: 10px;
+        font-size: 16px;
+        padding: 5px;
+    } /* 增大文本区域字体 */
+    .image-preview {
+        width: 100px;
+        height: 100px;
+        border: 1px solid #ccc;
+        margin-top: 5px;
+        cursor: pointer;
+    }
+    .status {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        padding-top: 60px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.9);
+    }
+    .modal-content {
+        margin: auto;
+        display: block;
+        max-width: 80%;
+        max-height: 80%;
+    }
+    .close {
+        position: absolute;
+        top: 20px;
+        right: 35px;
+        color: #fff;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+        cursor: pointer;
+    }
+    .close:hover {
+        color: #bbb;
+    }
+    .my-button {
+        margin: 10px;
+        padding: 10px 30px;
+        font-size: 16px;
+        cursor: pointer;
+    }
     </style>
     <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 </head>
@@ -61,11 +144,14 @@
                 <div id="cabinetStatus" class="status"></div>
             </div>
             <div>
+	<button class="my-button" onclick="window.location.reload();" margin-left: 100px; margin-top: 20px;>刷新页面</button>
+            </div>
+            <div>
                 <input type="file" id="sealImg" accept="image/*" onchange="previewImage(event, 'sealPreview'); detectSeal(event);">
                 <img id="sealPreview" class="image-preview" onclick="openModal(this.src)">
                 <label for="sealImg">导入封条</label>
                 <div id="sealStatus" class="status"></div>
-            </div>
+            </div>                       
         </div>
         
         <!-- 动态生成的字段区域 -->
