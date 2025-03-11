@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>柜号识别</title>
     <script>
@@ -20,116 +20,127 @@
         }
     </script>
     <style>
-    /* 页面样式 */
-    body {
-        margin: 0;
-        padding: 0;
-        padding-bottom: 30px; /* 增加底部内边距，防止误触 */
-        padding-top: 10px; /* 增加顶部内边距，防止误触 */
-        box-sizing: border-box;
-    }
-    .container {
-        width: 90%;
-        margin: auto;
-        text-align: center;
-        padding-bottom:30px; /* 增加底部内边距，防止误触 */
-        padding-top: 10px; /* 增加顶部内边距，防止误触 */
-    }
-    .image-upload {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 10px;
-    }
-    .image-upload label {
-        display: block;
-        width: 100px;
-        height: 30px;
-        border: 1px solid #ccc;
-        text-align: center;
-        line-height: 30px;
-        cursor: pointer;
-        font-size: 14px;
-    }
-    input[type="file"] {
-        display: none;
-    }
-    .field-container {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-    .field-container label {
-        width: 100px; /* 固定宽度 */
-        text-align: right; /* 字段名称靠右对齐 */
-        margin-right: 10px;
-        white-space: nowrap; /* 防止字段名称换行 */
-    }
-    .field-container input {
-        flex: 1;
-        font-size: 16px;
-        padding: 5px;
-    } /* 增大输入框字体 */
-    .field-container input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
-        margin-left: 10px;
-    } /* 调整复选框大小 */
-    textarea {
-        width: 100%;
-        height: 200px;
-        margin-top: 10px;
-        font-size: 16px;
-        padding: 5px;
-    } /* 增大文本区域字体 */
-    .image-preview {
-        width: 100px;
-        height: 100px;
-        border: 1px solid #ccc;
-        margin-top: 5px;
-        cursor: pointer;
-    }
-    .status {
-        font-size: 12px;
-        color: #666;
-        margin-top: 5px;
-    }
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1;
-        padding-top: 60px;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0,0,0,0.9);
-    }
-    .modal-content {
-        margin: auto;
-        display: block;
-        max-width: 80%;
-        max-height: 80%;
-    }
-    .close {
-        position: absolute;
-        top: 20px;
-        right: 35px;
-        color: #fff;
-        font-size: 40px;
-        font-weight: bold;
-        transition: 0.3s;
-        cursor: pointer;
-    }
-    .close:hover {
-        color: #bbb;
-    }
-    .my-button {
-        margin: 10px;
-        padding: 10px 30px;
-        font-size: 16px;
-        cursor: pointer;
-    }
+        /* 页面样式 */
+        body {
+            margin: 0;
+            padding: 0;
+            padding-bottom: 30px; /* 增加底部内边距，防止误触 */
+            padding-top: 10px; /* 增加顶部内边距，防止误触 */
+            box-sizing: border-box;
+        }
+        .container {
+            width: 90%;
+            margin: auto;
+            text-align: center;
+            padding-bottom: 30px; /* 增加底部内边距，防止误触 */
+            padding-top: 10px; /* 增加顶部内边距，防止误触 */
+        }
+        .image-upload {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .image-upload label {
+            display: block;
+            width: 100px;
+            height: 30px;
+            border: 1px solid #ccc;
+            text-align: center;
+            line-height: 30px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .field-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .field-container label {
+            width: 100px; /* 固定宽度 */
+            text-align: right; /* 字段名称靠右对齐 */
+            margin-right: 10px;
+            white-space: nowrap; /* 防止字段名称换行 */
+            pointer-events: none; /* 阻止点击事件 */
+        }
+        .field-container input {
+            flex: 1;
+            font-size: 16px;
+            padding: 5px;
+            text-transform: uppercase;
+        } /* 增大输入框字体 */
+        .field-container input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+            pointer-events: auto; /* 允许点击事件 */
+        } /* 调整复选框大小 */
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-top: 10px;
+            font-size: 16px;
+            padding: 5px;
+            text-transform: uppercase;
+        } /* 增大文本区域字体 */
+        .image-preview {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #ccc;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+        .status {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 60px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.9);
+        }
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 80%;
+            max-height: 80%;
+        }
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: #bbb;
+        }
+        .my-button {
+            margin: 10px;
+            padding: 10px 30px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .delete-icon {
+            cursor: pointer;
+            margin-left: 10px;
+            color: red;
+            font-size: 16px;
+            display: none; /* 默认隐藏 */
+        }
     </style>
     <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 </head>
@@ -144,7 +155,7 @@
                 <div id="cabinetStatus" class="status"></div>
             </div>
             <div>
-	<button class="my-button" onclick="window.location.reload();" margin-left: 100px; margin-top: 20px;>刷新页面</button>
+                <button class="my-button" onclick="window.location.reload();" margin-left: 100px; margin-top: 20px;>刷新页面</button>
             </div>
             <div>
                 <input type="file" id="sealImg" accept="image/*" onchange="previewImage(event, 'sealPreview'); detectSeal(event);">
@@ -173,7 +184,7 @@
     <script>
         // 定义所有字段的名称
         const fields = ['做柜时间', '工厂名称', '装货地点', '订舱号', '柜号', '封条', '柜重', '柜型', '提柜地点', '还柜地点', '车牌', '司机', '电话号码', '身份证', '车头重', '车架重', '托架号'];
-        
+
         // 柜型转换映射表，用于将API返回的柜型代码转换为可读的柜型名称
         const containerTypeMap = {
             '42V1': '40HT',
@@ -202,10 +213,6 @@
             'L5G1': '45HQ'
         };
 
-        // 工厂名称和装货地点的默认选项
-        const factoryOptions = ['美的', 'TCL', '格兰仕', '伟易达'];
-        const locationOptions = ['顺德北滘', '广州南沙', '中山民众', '东莞洪梅'];
-
         // 提柜地点和还柜地点的默认选项
         const pickupOptions = [
             '盐田码头', '蛇口码头', '赤湾码头', '大铲湾码头', '文汇堆场', '通捷利一场', '通捷利五场', '天河堆场', 
@@ -215,66 +222,26 @@
         ];
         const returnOptions = ['盐田码头', '蛇口码头', '赤湾码头', '大铲湾码头'];
 
-        // 车牌、司机、电话号码、身份证、车头重、车架重、托架号的默认数据
-        const vehicleData = [
-            {
-                licensePlate: '粤BMP850',
-                driver: '林忠玉',
-                phone: '13631561213',
-                idCard: '412902197309064814',
-                headWeight: '',
-                frameWeight: '',
-                trailerNumber: ''
-            },
-            {
-                licensePlate: '粤BLV020',
-                driver: '王晓飞',
-                phone: '13823742658',
-                idCard: '411081198611068373',
-                headWeight: '',
-                frameWeight: '',
-                trailerNumber: ''
-            },
-            {
-                licensePlate: '粤BNN909',
-                driver: '林春早',
-                phone: '13410235386',
-                idCard: '432624197911041119',
-                headWeight: '',
-                frameWeight: '',
-                trailerNumber: ''
-            },
-            {
-                licensePlate: '粤BKC508',
-                driver: '徐永兵',
-                phone: '13902472205',
-                idCard: '420703196912053379',
-                headWeight: '',
-                frameWeight: '',
-                trailerNumber: ''
-            },
-            {
-                licensePlate: '粤BGL690',
-                driver: '杨兵',
-                phone: '15236025455',
-                idCard: '411381198207103954',
-                headWeight: '',
-                frameWeight: '',
-                trailerNumber: ''
-            },
-            {
-                licensePlate: '粤BLB806',
-                driver: '闫华伟',
-                phone: '13823526286',
-                idCard: '412902197511240236',
-                headWeight: '',
-                frameWeight: '',
-                trailerNumber: ''
+        // 初始化 localStorage 中的选项
+        function initializeLocalStorage() {
+            if (!localStorage.getItem('pickupOptions')) {
+                localStorage.setItem('pickupOptions', JSON.stringify(pickupOptions));
             }
-        ];
+            if (!localStorage.getItem('returnOptions')) {
+                localStorage.setItem('returnOptions', JSON.stringify(returnOptions));
+            }
+            if (!localStorage.getItem('factoryLocationMap')) {
+                localStorage.setItem('factoryLocationMap', JSON.stringify({}));
+            }
+            if (!localStorage.getItem('vehicleData')) {
+                localStorage.setItem('vehicleData', JSON.stringify([]));
+            }
+        }
 
         // 动态创建字段的函数
         function createFields() {
+            initializeLocalStorage(); // 初始化 localStorage
+
             let container = document.getElementById("fields");
             fields.forEach(field => {
                 // 创建每个字段的容器
@@ -301,30 +268,88 @@
                     input.type = "datetime-local";
                 }
 
-                // 工厂名称和装货地点的特殊处理
-                if (field === '工厂名称' || field === '装货地点') {
+                // 工厂名称的特殊处理
+                if (field === '工厂名称') {
                     // 创建下拉选择列表
                     let datalist = document.createElement("datalist");
                     datalist.id = field + "Options";
                     input.setAttribute("list", field + "Options");
 
-                    // 根据字段类型添加选项
-                    if (field === '工厂名称') {
-                        factoryOptions.forEach(option => {
-                            let optionElement = document.createElement("option");
-                            optionElement.value = option;
-                            datalist.appendChild(optionElement);
-                        });
-                    } else if (field === '装货地点') {
-                        locationOptions.forEach(option => {
-                            let optionElement = document.createElement("option");
-                            optionElement.value = option;
-                            datalist.appendChild(optionElement);
-                        });
-                    }
+                    // 从 localStorage 中读取选项
+                    const options = JSON.parse(localStorage.getItem('factoryOptions')) || [];
+                    options.forEach(option => {
+                        let optionElement = document.createElement("option");
+                        optionElement.value = option;
+                        datalist.appendChild(optionElement);
+                    });
 
                     // 将下拉列表添加到字段容器中
                     fieldContainer.appendChild(datalist);
+
+                    // 添加删除图标
+                    let deleteIcon = document.createElement("span");
+                    deleteIcon.className = "delete-icon";
+                    deleteIcon.innerHTML = "&times;";
+                    deleteIcon.style.display = "none"; // 默认隐藏
+                    deleteIcon.onclick = function() {
+                        const selectedFactory = input.value;
+                        if (selectedFactory) {
+                            // 从 localStorage 中获取工厂和装货地点的映射关系
+                            const factoryLocationMap = JSON.parse(localStorage.getItem('factoryLocationMap'));
+                            const locationToDelete = factoryLocationMap[selectedFactory]; // 获取该工厂对应的装货地点
+
+                            // 从 localStorage 中删除该工厂名称
+                            const factoryOptions = JSON.parse(localStorage.getItem('factoryOptions')) || [];
+                            const updatedFactoryOptions = factoryOptions.filter(option => option !== selectedFactory);
+                            localStorage.setItem('factoryOptions', JSON.stringify(updatedFactoryOptions));
+
+                            // 从工厂和装货地点的映射关系中删除该工厂
+                            delete factoryLocationMap[selectedFactory];
+                            localStorage.setItem('factoryLocationMap', JSON.stringify(factoryLocationMap));
+
+                            // 更新下拉列表
+                            updateDatalistOptions('工厂名称', updatedFactoryOptions);
+
+                            // 清空工厂名称和装货地点字段
+                            input.value = "";
+                            document.getElementById('装货地点').value = "";
+
+                            // 隐藏删除图标
+                            deleteIcon.style.display = "none";
+
+                            // 如果该工厂有对应的装货地点，则从装货地点选项中删除
+                            if (locationToDelete) {
+                                const locationOptions = JSON.parse(localStorage.getItem('locationOptions')) || [];
+                                const updatedLocationOptions = locationOptions.filter(option => option !== locationToDelete);
+                                localStorage.setItem('locationOptions', JSON.stringify(updatedLocationOptions));
+                                updateDatalistOptions('装货地点', updatedLocationOptions);
+                            }
+                        }
+                    };
+
+                    // 监听输入框的变化
+                    input.addEventListener('input', function() {
+                        const factoryOptions = JSON.parse(localStorage.getItem('factoryOptions')) || [];
+                        if (factoryOptions.includes(input.value)) {
+                            deleteIcon.style.display = "inline"; // 如果输入框的值在 localStorage 中，显示删除图标
+                        } else {
+                            deleteIcon.style.display = "none"; // 否则隐藏删除图标
+                        }
+
+                        // 自动填充装货地点
+                        const factoryLocationMap = JSON.parse(localStorage.getItem('factoryLocationMap'));
+                        if (factoryLocationMap[input.value]) {
+                            document.getElementById('装货地点').value = factoryLocationMap[input.value];
+                        }
+                    });
+
+                    // 将删除图标添加到字段容器中
+                    fieldContainer.appendChild(deleteIcon);
+                }
+
+                // 装货地点的特殊处理（改为纯文本输入框）
+                if (field === '装货地点') {
+                    // 不需要创建 datalist，直接保留文本输入框
                 }
 
                 // 提柜地点和还柜地点的特殊处理
@@ -334,23 +359,53 @@
                     datalist.id = field + "Options";
                     input.setAttribute("list", field + "Options");
 
-                    // 根据字段类型添加选项
-                    if (field === '提柜地点') {
-                        pickupOptions.forEach(option => {
-                            let optionElement = document.createElement("option");
-                            optionElement.value = option;
-                            datalist.appendChild(optionElement);
-                        });
-                    } else if (field === '还柜地点') {
-                        returnOptions.forEach(option => {
-                            let optionElement = document.createElement("option");
-                            optionElement.value = option;
-                            datalist.appendChild(optionElement);
-                        });
-                    }
+                    // 从 localStorage 中读取选项
+                    const options = JSON.parse(localStorage.getItem(field === '提柜地点' ? 'pickupOptions' : 'returnOptions'));
+                    options.forEach(option => {
+                        let optionElement = document.createElement("option");
+                        optionElement.value = option;
+                        datalist.appendChild(optionElement);
+                    });
 
                     // 将下拉列表添加到字段容器中
                     fieldContainer.appendChild(datalist);
+
+                    // 添加删除图标
+                    let deleteIcon = document.createElement("span");
+                    deleteIcon.className = "delete-icon";
+                    deleteIcon.innerHTML = "&times;";
+                    deleteIcon.style.display = "none"; // 默认隐藏
+                    deleteIcon.onclick = function() {
+                        const selectedLocation = input.value;
+                        if (selectedLocation) {
+                            // 从 localStorage 中删除该选项
+                            const options = JSON.parse(localStorage.getItem(field === '提柜地点' ? 'pickupOptions' : 'returnOptions'));
+                            const updatedOptions = options.filter(option => option !== selectedLocation);
+                            localStorage.setItem(field === '提柜地点' ? 'pickupOptions' : 'returnOptions', JSON.stringify(updatedOptions));
+
+                            // 更新下拉列表
+                            updateDatalistOptions(field, updatedOptions);
+
+                            // 清空输入框
+                            input.value = "";
+
+                            // 隐藏删除图标
+                            deleteIcon.style.display = "none";
+                        }
+                    };
+
+                    // 监听输入框的变化
+                    input.addEventListener('input', function() {
+                        const options = JSON.parse(localStorage.getItem(field === '提柜地点' ? 'pickupOptions' : 'returnOptions'));
+                        if (options.includes(input.value)) {
+                            deleteIcon.style.display = "inline"; // 如果输入框的值在 localStorage 中，显示删除图标
+                        } else {
+                            deleteIcon.style.display = "none"; // 否则隐藏删除图标
+                        }
+                    });
+
+                    // 将删除图标添加到字段容器中
+                    fieldContainer.appendChild(deleteIcon);
                 }
 
                 // 车牌字段的特殊处理
@@ -360,15 +415,76 @@
                     datalist.id = field + "Options";
                     input.setAttribute("list", field + "Options");
 
-                    // 添加车牌选项
-                    vehicleData.forEach(vehicle => {
+                    // 从 localStorage 中读取选项
+                    const options = JSON.parse(localStorage.getItem('vehicleOptions')) || [];
+                    options.forEach(option => {
                         let optionElement = document.createElement("option");
-                        optionElement.value = vehicle.licensePlate;
+                        optionElement.value = option;
                         datalist.appendChild(optionElement);
                     });
 
                     // 将下拉列表添加到字段容器中
                     fieldContainer.appendChild(datalist);
+
+                    // 添加删除图标
+                    let deleteIcon = document.createElement("span");
+                    deleteIcon.className = "delete-icon";
+                    deleteIcon.innerHTML = "&times;";
+                    deleteIcon.style.display = "none"; // 默认隐藏
+                    deleteIcon.onclick = function() {
+                        const selectedLicensePlate = input.value;
+                        if (selectedLicensePlate) {
+                            // 从 localStorage 中删除该车牌
+                            const vehicleOptions = JSON.parse(localStorage.getItem('vehicleOptions')) || [];
+                            const updatedVehicleOptions = vehicleOptions.filter(option => option !== selectedLicensePlate);
+                            localStorage.setItem('vehicleOptions', JSON.stringify(updatedVehicleOptions));
+
+                            // 从 vehicleData 中删除该车牌及其相关信息
+                            const vehicleData = JSON.parse(localStorage.getItem('vehicleData')) || [];
+                            const updatedVehicleData = vehicleData.filter(vehicle => vehicle.licensePlate !== selectedLicensePlate);
+                            localStorage.setItem('vehicleData', JSON.stringify(updatedVehicleData));
+
+                            // 更新下拉列表
+                            updateDatalistOptions('车牌', updatedVehicleOptions);
+
+                            // 清空车牌及其关联字段
+                            input.value = "";
+                            document.getElementById('司机').value = "";
+                            document.getElementById('电话号码').value = "";
+                            document.getElementById('身份证').value = "";
+                            document.getElementById('车头重').value = "";
+                            document.getElementById('车架重').value = "";
+                            document.getElementById('托架号').value = "";
+
+                            // 隐藏删除图标
+                            deleteIcon.style.display = "none";
+                        }
+                    };
+
+                    // 监听输入框的变化
+                    input.addEventListener('input', function() {
+                        const vehicleOptions = JSON.parse(localStorage.getItem('vehicleOptions')) || [];
+                        if (vehicleOptions.includes(input.value)) {
+                            deleteIcon.style.display = "inline"; // 如果输入框的值在 localStorage 中，显示删除图标
+                        } else {
+                            deleteIcon.style.display = "none"; // 否则隐藏删除图标
+                        }
+
+                        // 自动填充司机、电话号码、身份证、车头重、车架重、托架号
+                        const vehicleData = JSON.parse(localStorage.getItem('vehicleData')) || [];
+                        const selectedVehicle = vehicleData.find(vehicle => vehicle.licensePlate === input.value);
+                        if (selectedVehicle) {
+                            document.getElementById('司机').value = selectedVehicle.driver || '';
+                            document.getElementById('电话号码').value = selectedVehicle.phone || '';
+                            document.getElementById('身份证').value = selectedVehicle.idCard || '';
+                            document.getElementById('车头重').value = selectedVehicle.headWeight || '';
+                            document.getElementById('车架重').value = selectedVehicle.frameWeight || '';
+                            document.getElementById('托架号').value = selectedVehicle.trailerNumber || '';
+                        }
+                    });
+
+                    // 将删除图标添加到字段容器中
+                    fieldContainer.appendChild(deleteIcon);
                 }
                 
                 // 创建复选框
@@ -386,11 +502,13 @@
 
             // 工厂名称和装货地点的联动功能
             document.getElementById('工厂名称').addEventListener('input', function() {
-                // 获取当前选择的工厂名称的索引
-                let factoryIndex = factoryOptions.indexOf(this.value);
-                // 如果选择的工厂名称在选项中，自动填充对应的装货地点
-                if (factoryIndex !== -1) {
-                    document.getElementById('装货地点').value = locationOptions[factoryIndex];
+                // 获取当前选择的工厂名称
+                const selectedFactory = this.value;
+                // 从 localStorage 中获取工厂和装货地点的映射关系
+                const factoryLocationMap = JSON.parse(localStorage.getItem('factoryLocationMap'));
+                // 如果选择的工厂名称在映射关系中，自动填充对应的装货地点
+                if (factoryLocationMap[selectedFactory]) {
+                    document.getElementById('装货地点').value = factoryLocationMap[selectedFactory];
                 }
             });
 
@@ -399,7 +517,8 @@
                 // 获取当前选择的车牌
                 let selectedLicensePlate = this.value;
                 // 查找对应的车辆信息
-                let selectedVehicle = vehicleData.find(vehicle => vehicle.licensePlate === selectedLicensePlate);
+                const savedVehicleData = JSON.parse(localStorage.getItem('vehicleData')) || [];
+                const selectedVehicle = savedVehicleData.find(vehicle => vehicle.licensePlate === selectedLicensePlate);
                 if (selectedVehicle) {
                     // 自动填充司机、电话号码、身份证、车头重、车架重、托架号字段
                     document.getElementById('司机').value = selectedVehicle.driver || '';
@@ -505,11 +624,92 @@
                                 if ((field === '柜重' || field === '车头重' || field === '车架重') && value && !value.endsWith(' KGS')) {
                                     value += ' KGS';
                                 }
-                                return `${field}: ${value}`;
+                                return `${field}: ${value.toUpperCase()}`; // 确保生成的文本为大写
                             })
                             .join("\n");
+
+            // 检测并更新 localStorage 中的选项
+            updateLocalStorageOptions();
+
             // 将生成的文本显示在输出区域
             document.getElementById("output").value = text;
+        }
+
+        // 更新 localStorage 中的选项
+        function updateLocalStorageOptions() {
+            const fieldsToUpdate = [
+                { field: '工厂名称', storageKey: 'factoryOptions' },
+                { field: '装货地点', storageKey: 'locationOptions' },
+                { field: '提柜地点', storageKey: 'pickupOptions' },
+                { field: '还柜地点', storageKey: 'returnOptions' },
+                { field: '车牌', storageKey: 'vehicleOptions' }
+            ];
+
+            fieldsToUpdate.forEach(({ field, storageKey }) => {
+                const inputValue = document.getElementById(field).value.toUpperCase(); // 转换为大写
+                if (inputValue) {
+                    const options = JSON.parse(localStorage.getItem(storageKey)) || [];
+                    if (!options.includes(inputValue)) {
+                        options.push(inputValue);
+                        localStorage.setItem(storageKey, JSON.stringify(options));
+                        // 更新下拉列表
+                        updateDatalistOptions(field, options);
+                    }
+                }
+            });
+
+            // 更新工厂名称和装货地点的映射关系
+            const factory = document.getElementById('工厂名称').value;
+            const location = document.getElementById('装货地点').value;
+            if (factory && location) {
+                const factoryLocationMap = JSON.parse(localStorage.getItem('factoryLocationMap')) || {};
+                if (!factoryLocationMap[factory]) {
+                    factoryLocationMap[factory] = location;
+                    localStorage.setItem('factoryLocationMap', JSON.stringify(factoryLocationMap));
+                }
+            }
+
+            // 保存车牌及其关联字段的信息
+            const licensePlate = document.getElementById('车牌').value;
+            if (licensePlate) {
+                const vehicleInfo = {
+                    licensePlate: licensePlate,
+                    driver: document.getElementById('司机').value,
+                    phone: document.getElementById('电话号码').value,
+                    idCard: document.getElementById('身份证').value,
+                    headWeight: document.getElementById('车头重').value,
+                    frameWeight: document.getElementById('车架重').value,
+                    trailerNumber: document.getElementById('托架号').value
+                };
+
+                // 获取现有的车辆数据
+                let vehicleData = JSON.parse(localStorage.getItem('vehicleData')) || [];
+                // 查找是否已经存在该车牌的信息
+                const existingVehicleIndex = vehicleData.findIndex(vehicle => vehicle.licensePlate === licensePlate);
+                if (existingVehicleIndex !== -1) {
+                    // 如果存在，更新信息
+                    vehicleData[existingVehicleIndex] = vehicleInfo;
+                } else {
+                    // 如果不存在，添加新信息
+                    vehicleData.push(vehicleInfo);
+                }
+                // 保存到 localStorage
+                localStorage.setItem('vehicleData', JSON.stringify(vehicleData));
+            }
+        }
+
+        // 更新下拉列表的选项
+        function updateDatalistOptions(field, options) {
+            const datalist = document.getElementById(field + 'Options');
+            if (datalist) {
+                datalist.innerHTML = ''; // 清空现有选项
+                options.forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option;
+                    optionElement.value = option.toUpperCase(); // 转换为大写
+                    datalist.appendChild(optionElement);
+                });
+            }
         }
         
         // 复制文本的功能
