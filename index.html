@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>柜号识别</title>
-    <script>
+    <!--<script>
         // 检测设备类型
         function isMobileDevice() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -18,7 +18,7 @@
             // 或者直接隐藏页面内容
             document.body.innerHTML = "<h1>此页面仅限手机访问</h1>";
         }
-    </script>
+    </script>-->
     <style>
         /* 页面样式 */
         body {
@@ -498,7 +498,13 @@
                 fieldContainer.appendChild(input);
                 fieldContainer.appendChild(checkbox);
                 container.appendChild(fieldContainer);
+                // 监听输入框的 change 事件，选择完选项后自动失去焦点
+        if (field === '工厂名称' || field === '提柜地点' || field === '还柜地点' || field === '车牌') {
+            input.addEventListener('change', function() {
+                this.blur(); // 失去焦点
             });
+        }
+    });
 
             // 工厂名称和装货地点的联动功能
             document.getElementById('工厂名称').addEventListener('input', function() {
