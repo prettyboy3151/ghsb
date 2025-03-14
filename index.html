@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0", maximum-scale=1.0, user-scalable=no">
     <title>柜号识别</title>
-    <script>
+    <!--<script>
         // 检测设备类型
         function isMobileDevice() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -18,7 +18,7 @@
             // 或者直接隐藏页面内容
             document.body.innerHTML = "<h1>此页面仅限手机访问</h1>";
         }
-    </script>
+    </script>-->
     <style>
         /* 页面样式 */
         body {
@@ -182,6 +182,27 @@
     </div>
     
     <script>
+        // 监听整个文档的点击事件
+    document.addEventListener('click', function(event) {
+        // 获取所有输入框和文本区域
+        const inputs = document.querySelectorAll('input, textarea');
+        let isInputClicked = false;
+
+        // 检查点击的目标是否是输入框或文本区域
+        inputs.forEach(input => {
+            if (input.contains(event.target)) {
+                isInputClicked = true;
+            }
+        });
+
+        // 如果点击的不是输入框或文本区域，则让所有输入框失去焦点
+        if (!isInputClicked) {
+            inputs.forEach(input => {
+                input.blur();
+            });
+        }
+    });
+
         // 定义所有字段的名称
         const fields = ['做柜时间', '工厂名称', '装货地点', '订舱号', '柜号', '封条', '柜重', '柜型', '提柜地点', '还柜地点', '车牌', '司机', '电话号码', '身份证', '车头重', '车架重', '托架号'];
 
@@ -726,27 +747,33 @@
             alert("内容已复制");
         }
         
-        // 清空所有字段的功能
         function clearFields() {
-            // 定义需要清除的字段
-            const fieldsToClear = ['柜号', '封条', '柜重', '柜型', '车牌', '司机', '电话号码', '身份证', '车头重', '车架重', '托架号'];
+    // 定义需要清除的字段
+    const fieldsToClear = ['柜号', '封条', '柜重', '柜型', '车牌', '司机', '电话号码', '身份证', '车头重', '车架重', '托架号'];
 
-            // 清除指定字段的内容
-            fieldsToClear.forEach(field => {
-                document.getElementById(field).value = "";
-            });
+    // 清除指定字段的内容
+    fieldsToClear.forEach(field => {
+        document.getElementById(field).value = "";
+    });
 
-            // 清除柜号和封条照片的预览
-            document.getElementById("cabinetPreview").src = "";
-            document.getElementById("sealPreview").src = "";
+    // 清除柜号和封条照片的预览
+    document.getElementById("cabinetPreview").src = "";
+    document.getElementById("sealPreview").src = "";
 
-            // 清除识别状态
-            document.getElementById("cabinetStatus").textContent = "";
-            document.getElementById("sealStatus").textContent = "";
+    // 清除识别状态
+    document.getElementById("cabinetStatus").textContent = "";
+    document.getElementById("sealStatus").textContent = "";
 
-            // 清除多行文本框的内容
-            document.getElementById("output").value = "";
-        }
+    // 清除多行文本框的内容
+    document.getElementById("output").value = "";
+
+    // 新增代码：隐藏车牌输入框的删除图标
+    const licensePlateInput = document.getElementById('车牌');
+    const deleteIcon = licensePlateInput.nextElementSibling; // 获取删除图标
+    if (deleteIcon && deleteIcon.classList.contains('delete-icon')) {
+        deleteIcon.style.display = "none"; // 隐藏删除图标
+    }
+}
 
         // 图片放大功能
         function openModal(src) {
