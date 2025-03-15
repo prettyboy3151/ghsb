@@ -4,21 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0", maximum-scale=1.0, user-scalable=no">
     <title>柜号识别</title>
-    <!--<script>
-        // 检测设备类型
-        function isMobileDevice() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        }
-
-        // 如果用户使用的是电脑，则重定向或隐藏内容
-        if (!isMobileDevice()) {
-            // 重定向到其他页面
-            window.location.href = "https://example.com/not-allowed.html";
-            
-            // 或者直接隐藏页面内容
-            document.body.innerHTML = "<h1>此页面仅限手机访问</h1>";
-        }
-    </script>-->
     <style>
         /* 页面样式 */
         body {
@@ -71,12 +56,6 @@
             padding: 5px;
             text-transform: uppercase;
         } /* 增大输入框字体 */
-        .field-container input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            margin-left: 10px;
-            pointer-events: auto; /* 允许点击事件 */
-        } /* 调整复选框大小 */
         textarea {
             width: 100%;
             height: 200px;
@@ -169,7 +148,8 @@
         <div id="fields"></div>
         
         <!-- 输出文本区域和操作按钮 -->
-        <textarea id="output"></textarea>
+        <textarea id="output" input type="text" placeholder="1,点击“生成”按钮，所有已填写的内容都会自动显示在这里，同时会自动保存下划线字段输入的内容为选项，下次可直接选择。
+2，点击“继续”按钮，会自动去除车辆柜封内容，保留其他信息"></textarea>
         <button class="my-button" onclick="generateText()">生成</button>
         <button class="my-button" onclick="copyText()">复制</button>
         <button class="my-button" onclick="clearFields()">继续</button>
@@ -264,6 +244,8 @@
             initializeLocalStorage(); // 初始化 localStorage
 
             let container = document.getElementById("fields");
+            const fieldsToUnderline = ['工厂名称', '装货地点', '提柜地点', '还柜地点', '车牌', '司机', '电话号码', '身份证', '车头重', '车架重', '托架号'];
+
             fields.forEach(field => {
                 // 创建每个字段的容器
                 let fieldContainer = document.createElement("div");
@@ -271,7 +253,11 @@
                 
                 // 创建字段的标签
                 let label = document.createElement("label");
-                label.textContent = field + ":";
+                if (fieldsToUnderline.includes(field)) {
+                    label.innerHTML = `<u>${field}:</u>`; // 使用 <u> 标签添加下划线
+                } else {
+                    label.textContent = field + ":"; // 其他字段不加下划线
+                }
                 label.htmlFor = field;
                 
                 // 创建输入框
@@ -348,22 +334,6 @@
                         }
                     };
 
-                    /*// 监听输入框的变化
-                    input.addEventListener('input', function() {
-                        const factoryOptions = JSON.parse(localStorage.getItem('factoryOptions')) || [];
-                        if (factoryOptions.includes(input.value)) {
-                            deleteIcon.style.display = "inline"; // 如果输入框的值在 localStorage 中，显示删除图标
-                        } else {
-                            deleteIcon.style.display = "none"; // 否则隐藏删除图标
-                        }
-
-                        // 自动填充装货地点
-                        const factoryLocationMap = JSON.parse(localStorage.getItem('factoryLocationMap'));
-                        if (factoryLocationMap[input.value]) {
-                            document.getElementById('装货地点').value = factoryLocationMap[input.value];
-                        }
-                    });*/
-
                     // 将删除图标添加到字段容器中
                     fieldContainer.appendChild(deleteIcon);
                 }
@@ -414,16 +384,6 @@
                             deleteIcon.style.display = "none";
                         }
                     };
-
-                    /*// 监听输入框的变化
-                    input.addEventListener('input', function() {
-                        const options = JSON.parse(localStorage.getItem(field === '提柜地点' ? 'pickupOptions' : 'returnOptions'));
-                        if (options.includes(input.value)) {
-                            deleteIcon.style.display = "inline"; // 如果输入框的值在 localStorage 中，显示删除图标
-                        } else {
-                            deleteIcon.style.display = "none"; // 否则隐藏删除图标
-                        }
-                    });*/
 
                     // 将删除图标添加到字段容器中
                     fieldContainer.appendChild(deleteIcon);
@@ -482,43 +442,15 @@
                         }
                     };
 
-                    /*// 监听输入框的变化
-                    input.addEventListener('input', function() {
-                        const vehicleOptions = JSON.parse(localStorage.getItem('vehicleOptions')) || [];
-                        if (vehicleOptions.includes(input.value)) {
-                            deleteIcon.style.display = "inline"; // 如果输入框的值在 localStorage 中，显示删除图标
-                        } else {
-                            deleteIcon.style.display = "none"; // 否则隐藏删除图标
-                        }
-
-                        // 自动填充司机、电话号码、身份证、车头重、车架重、托架号
-                        const vehicleData = JSON.parse(localStorage.getItem('vehicleData')) || [];
-                        const selectedVehicle = vehicleData.find(vehicle => vehicle.licensePlate === input.value);
-                        if (selectedVehicle) {
-                            document.getElementById('司机').value = selectedVehicle.driver || '';
-                            document.getElementById('电话号码').value = selectedVehicle.phone || '';
-                            document.getElementById('身份证').value = selectedVehicle.idCard || '';
-                            document.getElementById('车头重').value = selectedVehicle.headWeight || '';
-                            document.getElementById('车架重').value = selectedVehicle.frameWeight || '';
-                            document.getElementById('托架号').value = selectedVehicle.trailerNumber || '';
-                        }
-                    });*/
-
                     // 将删除图标添加到字段容器中
                     fieldContainer.appendChild(deleteIcon);
                 }
-                
-                // 创建复选框
-                let checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.checked = true;
-                checkbox.id = field + "_checkbox";
-                
-                // 将标签、输入框和复选框添加到字段容器中
+
+                // 将标签和输入框添加到字段容器中
                 fieldContainer.appendChild(label);
                 fieldContainer.appendChild(input);
-                fieldContainer.appendChild(checkbox);
                 container.appendChild(fieldContainer);
+
                 // 监听输入框的 change 事件，选择完选项后自动失去焦点
                 if (field === '工厂名称' || field === '提柜地点' || field === '还柜地点' || field === '车牌') {
                     input.addEventListener('change', function() {
@@ -575,7 +507,19 @@
             var file = event.target.files[0];
             if (file) {
                 // 显示识别状态
-                document.getElementById('cabinetStatus').textContent = "识别中...";
+                document.getElementById('cabinetStatus').textContent = "识别中...预计10s";
+
+                // 设置倒计时
+                let countdown = 11;
+                const countdownInterval = setInterval(() => {
+                    countdown--;
+                    document.getElementById('cabinetStatus').textContent = `识别中...预计${countdown}s`;
+                    if (countdown <= 0) {
+                        clearInterval(countdownInterval);
+                        document.getElementById('cabinetStatus').textContent = "识别中...";
+                    }
+                }, 1000);
+
                 formData.append("keys", "4a8f1c60b65be19687d9969753b4a5b6");
                 formData.append("img", file);
                 // 发送AJAX请求到API进行识别
@@ -612,7 +556,19 @@
             var file = event.target.files[0];
             if (file) {
                 // 显示识别状态
-                document.getElementById('sealStatus').textContent = "识别中...";
+                document.getElementById('sealStatus').textContent = "识别中...预计10S";
+                
+                // 设置倒计时
+                let countdown = 10;
+                const countdownInterval = setInterval(() => {
+                    countdown--;
+                    document.getElementById('sealStatus').textContent = `识别中...预计${countdown}S`;
+                    if (countdown <= 0) {
+                        clearInterval(countdownInterval);
+                        document.getElementById('sealStatus').textContent = "识别中...";
+                    }
+                }, 1000);
+
                 formData.append("keys", "4a8f1c60b65be19687d9969753b4a5b6");
                 formData.append("img", file);
                 // 发送AJAX请求到API进行识别
@@ -624,6 +580,7 @@
                     data: formData,
                     mimeType: "multipart/form-data",
                     success: function(data) {
+                        clearInterval(countdownInterval); // 清除倒计时
                         var res = JSON.parse(data);
                         if (res.code === 0) {
                             // 识别成功，填充封条字段
@@ -634,6 +591,7 @@
                         }
                     },
                     error: function(xhr, status, error) {
+                        clearInterval(countdownInterval); // 清除倒计时
                         console.error("API调用失败:", error);
                         document.getElementById('sealStatus').textContent = "识别失败，请重新上传";
                     }
@@ -643,17 +601,24 @@
         
         // 生成文本的功能
         function generateText() {
-            // 过滤出选中的字段，并生成文本
-            let text = fields.filter(field => document.getElementById(field + "_checkbox").checked)
-                            .map(field => {
-                                let value = document.getElementById(field).value;
-                                // 如果字段是柜重、车头重、车架重，且值不为空，确保单位存在
-                                if ((field === '柜重' || field === '车头重' || field === '车架重') && value && !value.endsWith(' KGS')) {
-                                    value += ' KGS';
-                                }
-                                return `${field}: ${value.toUpperCase()}`; // 确保生成的文本为大写
-                            })
-                            .join("\n");
+            // 只生成有内容的字段
+            let text = fields.filter(field => {
+                let value = document.getElementById(field).value;
+                return value.trim() !== ""; // 只保留有内容的字段
+            })
+            .map(field => {
+                let value = document.getElementById(field).value;
+                // 如果字段是柜重、车头重、车架重，且值不为空，确保单位存在
+                if ((field === '柜重' || field === '车头重' || field === '车架重') && value && !value.endsWith(' KGS')) {
+                    value += ' KGS';
+                }
+                // 如果字段是“做柜时间”，去掉日期和时间中间的字母T
+                if (field === '做柜时间') {
+                    value = value.replace('T', ' ');
+                }
+                return `${field}: ${value.toUpperCase()}`; // 确保生成的文本为大写
+            })
+            .join("\n");
 
             // 检测并更新 localStorage 中的选项
             updateLocalStorageOptions();
