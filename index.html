@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0", maximum-scale=1.0, user-scalable=no">
     <title>柜号识别</title>
-    <script>
+    <!--<script>
         // 检测设备类型
         function isMobileDevice() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -18,7 +18,7 @@
             // 或者直接隐藏页面内容
             document.body.innerHTML = "<h1>此页面仅限手机访问</h1>";
         }
-    </script>
+    </script>-->
     <style>
         /* 页面样式 */
         body {
@@ -348,7 +348,7 @@
                         }
                     };
 
-                    // 监听输入框的变化
+                    /*// 监听输入框的变化
                     input.addEventListener('input', function() {
                         const factoryOptions = JSON.parse(localStorage.getItem('factoryOptions')) || [];
                         if (factoryOptions.includes(input.value)) {
@@ -362,7 +362,7 @@
                         if (factoryLocationMap[input.value]) {
                             document.getElementById('装货地点').value = factoryLocationMap[input.value];
                         }
-                    });
+                    });*/
 
                     // 将删除图标添加到字段容器中
                     fieldContainer.appendChild(deleteIcon);
@@ -415,7 +415,7 @@
                         }
                     };
 
-                    // 监听输入框的变化
+                    /*// 监听输入框的变化
                     input.addEventListener('input', function() {
                         const options = JSON.parse(localStorage.getItem(field === '提柜地点' ? 'pickupOptions' : 'returnOptions'));
                         if (options.includes(input.value)) {
@@ -423,7 +423,7 @@
                         } else {
                             deleteIcon.style.display = "none"; // 否则隐藏删除图标
                         }
-                    });
+                    });*/
 
                     // 将删除图标添加到字段容器中
                     fieldContainer.appendChild(deleteIcon);
@@ -482,7 +482,7 @@
                         }
                     };
 
-                    // 监听输入框的变化
+                    /*// 监听输入框的变化
                     input.addEventListener('input', function() {
                         const vehicleOptions = JSON.parse(localStorage.getItem('vehicleOptions')) || [];
                         if (vehicleOptions.includes(input.value)) {
@@ -502,7 +502,7 @@
                             document.getElementById('车架重').value = selectedVehicle.frameWeight || '';
                             document.getElementById('托架号').value = selectedVehicle.trailerNumber || '';
                         }
-                    });
+                    });*/
 
                     // 将删除图标添加到字段容器中
                     fieldContainer.appendChild(deleteIcon);
