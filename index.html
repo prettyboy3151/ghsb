@@ -139,6 +139,16 @@
     <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 </head>
 <body>
+    <h3>从聊天记录选择的图片</h3>
+    <p id="status">等待选择图片...</p>
+    <script>
+        // 监听小程序传来的消息
+        document.addEventListener('message', function(e) {
+            if (e.data && e.data.type === 'imageReceived') {
+                document.getElementById('status').textContent = e.data.data;
+            }
+        });
+    </script>
     <div class="container">
         <!-- 图片上传区域 -->
         <div class="image-upload">
