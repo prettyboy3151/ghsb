@@ -4,21 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0", maximum-scale=1.0, user-scalable=no">
     <title>柜号识别</title>
-    <script>
-        // 检测设备类型
-        function isMobileDevice() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        }
-
-        // 如果用户使用的是电脑，则重定向或隐藏内容
-        if (!isMobileDevice()) {
-            // 重定向到其他页面
-            window.location.href = "https://example.com/not-allowed.html";
-            
-            // 或者直接隐藏页面内容
-            document.body.innerHTML = "<h1>此页面仅限手机访问</h1>";
-        }
-    </script>
+    <!-- 引入 cropper.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
     <style>
         /* 页面样式 */
         body {
@@ -135,6 +123,17 @@
             font-size: 16px;
             display: none; /* 默认隐藏 */
         }
+        /* 剪裁弹窗样式 */
+        #cropModal .modal-content {
+            max-width: 90%;
+            max-height: 80%;
+            margin: auto;
+            display: block;
+        }
+        #cropImage {
+            max-width: 100%;
+            max-height: 100%;
+        }
     </style>
     <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 </head>
@@ -143,7 +142,7 @@
         <!-- 图片上传区域 -->
         <div class="image-upload">
             <div>
-                <input type="file" id="cabinetImg" accept="image/*" onchange="previewImage(event, 'cabinetPreview'); detectPic(event);">
+                <input type="file" id="cabinetImg" accept="image/*" onchange="previewImage(event, 'cabinetPreview');">
                 <img id="cabinetPreview" class="image-preview" onclick="openModal(this.src)">
                 <label for="cabinetImg">导入柜门</label>                
                 <div id="cabinetStatus" class="status"></div>
@@ -152,7 +151,7 @@
                 <button class="my-button" onclick="window.location.reload();" margin-left: 100px; margin-top: 20px;>刷新页面</button>
             </div>
             <div>
-                <input type="file" id="sealImg" accept="image/*" onchange="previewImage(event, 'sealPreview'); detectSeal(event);">
+                <input type="file" id="sealImg" accept="image/*" onchange="previewImage(event, 'sealPreview');">
                 <img id="sealPreview" class="image-preview" onclick="openModal(this.src)">
                 <label for="sealImg">导入封条</label>
                 <div id="sealStatus" class="status"></div>
@@ -175,8 +174,86 @@
         <span class="close" onclick="closeModal()">&times;</span>
         <img class="modal-content" id="modalImage">
     </div>
+
+    <!-- 剪裁图片弹窗 -->
+    <div id="cropModal" class="modal">
+        <span class="close" onclick="closeCropModal()">&times;</span>
+        <div class="modal-content">
+            <img id="cropImage" src="" alt="剪裁图片">
+        </div>
+        <button class="my-button" onclick="confirmCrop()">确认剪裁</button>
+    </div>
     
     <script>
+        // 全局变量，用于存储当前剪裁的图片和文件
+        let currentFile = null;
+        let cropper = null;
+        let currentPreviewId = null;
+
+        // 打开剪裁弹窗
+        function openCropModal(file, previewId) {
+            currentFile = file;
+            currentPreviewId = previewId;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('cropImage').src = e.target.result;
+                document.getElementById('cropModal').style.display = "block";
+
+                // 初始化 Cropper
+                if (cropper) {
+                    cropper.destroy();
+                }
+                cropper = new Cropper(document.getElementById('cropImage'), {
+                    aspectRatio: NaN, // 自由比例
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    responsive: true,
+                    restore: true,
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 关闭剪裁弹窗
+        function closeCropModal() {
+            document.getElementById('cropModal').style.display = "none";
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+        }
+
+        // 确认剪裁
+        function confirmCrop() {
+            if (cropper) {
+                const croppedCanvas = cropper.getCroppedCanvas();
+                croppedCanvas.toBlob((blob) => {
+                    const file = new File([blob], currentFile.name, { type: 'image/jpeg' });
+
+                    // 显示剪裁后的图片在预览区
+                    document.getElementById(currentPreviewId).src = croppedCanvas.toDataURL('image/jpeg');
+
+                    // 检查是哪个预览框，调用对应识别功能
+                    if (currentPreviewId === 'cabinetPreview') {
+                        detectPic({ target: { files: [file] } });
+                    } else if (currentPreviewId === 'sealPreview') {
+                        detectSeal({ target: { files: [file] } });
+                    }
+
+                    closeCropModal();
+                }, 'image/jpeg');
+            }
+        }
+
+
+        // 修改图片上传事件处理函数
+        function previewImage(event, id) {
+            const file = event.target.files[0];
+            if (file) {
+                openCropModal(file, id);
+            }
+        }
+
         // 监听整个文档的点击事件
         document.addEventListener('click', function(event) {
             // 获取所有输入框和文本区域
@@ -507,13 +584,10 @@
         
         // 图片预览功能
         function previewImage(event, id) {
-            let reader = new FileReader();
-            reader.onload = function(){ 
-                // 将图片显示在预览区域
-                document.getElementById(id).src = reader.result; 
-            };
-            // 读取上传的图片文件
-            reader.readAsDataURL(event.target.files[0]);
+            const file = event.target.files[0];
+            if (file) {
+                openCropModal(file, id);
+            }
         }
         
         // 识别柜号图片的功能
