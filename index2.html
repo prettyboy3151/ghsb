@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>微信选图片示例</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
+</head>
+<body>
+  <h2>选择一张图片</h2>
+  <button id="chooseImageButton">选图</button>
+  <div id="preview"></div>
+
+  <script>
+    async function getWeChatSignature() {
+      const res = await fetch('https://1305432485-32szuo7mur.ap-guangzhou.tencentscf.com', { // 👉 在这里填上你的API地址
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: location.href.split('#')[0] }) // 当前网页URL
+      });
+      return res.json();
+    }
+
+    getWeChatSignature().then(data => {
+      wx.config({
+        debug: false, // 调试模式，发布时请关掉
+        appId: 'wxe946c85eaf8dcb8c', // 你的AppID
+        timestamp: data.timestamp,
+        nonceStr: data.nonceStr,
+        signature: data.signature,
+        jsApiList: ['chooseImage', 'previewImage']
+      });
+
+      wx.ready(function () {
+        document.getElementById('chooseImageButton').onclick = function () {
+          wx.chooseImage({
+            count: 1, // 只选一张
+            sizeType: ['original', 'compressed'], // 可以选原图或压缩图
+            sourceType: ['album', 'camera'], // 可以从相册或拍照
+            success: function (res) {
+              var localIds = res.localIds;
+              document.getElementById('preview').innerHTML = 
+                '<img src="' + localIds[0] + '" style="width: 100%; max-width: 300px;">';
+            }
+          });
+        };
+      });
+
+      wx.error(function(err){
+        console.error('微信配置错误:', err);
+      });
+    });
+  </script>
+</body>
+</html>
